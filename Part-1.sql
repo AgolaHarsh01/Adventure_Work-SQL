@@ -890,6 +890,21 @@ calculate by dividing the total year-to-date sales (SalesYTD) by the commission 
 Return SalesYTD, CommissionPCT, and the value rounded to the nearest whole number.
 */
 
-select SalesYTD,CommissionPct,CAST(ROUND(SalesYTD/CommissionPct,0) AS int) AS Value
+select SalesYTD,CommissionPct
+	,CAST(ROUND(SalesYTD/CommissionPct,0) AS int) AS Value
 from Sales.SalesPerson
 where CommissionPct!=0
+
+--Question:82
+/* From the following table write a query in SQL to find those persons that have a 2 in the first digit of their SalesYTD.
+Convert the SalesYTD column to an int type, and then to a char(20) type.
+Return FirstName, LastName, SalesYTD, and BusinessEntityID.
+*/
+
+select p.FirstName
+	,p.LastName
+	,sp.SalesYTD
+	,p.BusinessEntityID
+from Person.Person p
+JOIN Sales.SalesPerson sp ON p.BusinessEntityID=sp.BusinessEntityID
+Where CAST(CAST(sp.SalesYTD As INT) AS char(20)) LIKE '2%'
