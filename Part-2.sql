@@ -1,3 +1,4 @@
+--PART - 3 W3-RESOURCE
 --Question:-101
 /*
  From the following table write a query in SQL to calculate the salary percentile for each employee within a given department.
