@@ -955,10 +955,10 @@ SELECT TerritoryID
 	,AVG(Bonus) As AVg_Bonus
 	,SUM(SalesYTD) AS Sum_of_Sales
 FROM Sales.SalesPerson
-GROUP BY 
+GROUP BY terr
 
 
---Question:86
+--Question:87
 /*
  FROM the following table write a query in SQL to return the average list price of products.
  Consider the calculation only on unique values.
@@ -967,7 +967,108 @@ GROUP BY
 SELECT ROUND(AVG(ListPrice),3) AS Avg_List_price
 FROM Production.Product
 
+--Question:88
+/*
+From the following table write a query in SQL to return a moving average of yearly sales for each territory.
+Return BusinessEntityID, TerritoryID, SalesYear, SalesYTD, average SalesYTD as MovingAvg, and total SalesYTD as CumulativeTotal.
+*/
+
+select BusinessEntityID
+	,TerritoryID
+	,YEAR(ModifiedDate) AS SalesYear  
+	,SalesYTD
+	,AVG(SalesYTD) OVER(partition by TerritoryID) AS MovingAvg  
+from Sales.SalesPerson
+--where TerritoryID IS NULL
+
+--Question:90
+/*
+From the following table write a query in SQL to return the number of different titles that employees can hold.
+*/
+
+select COUNT(DISTINCT(JobTitle)) AS Number_of_Jobtitles
+from HumanResources.Employee
+
+--Question:91
+/*
+ From the following table write a query in SQL to return the number of different titles that employees can hold.
+*/
+
+select COUNT(*) AS Number_of_Employee
+from HumanResources.Employee
+
+--Question:92
+/*
+From the following table write a query in SQL to find the average bonus for the salespersons who achieved the sales quota above 25000. 
+Return number of salespersons, and average bonus.
+*/
+
+select AVG(Bonus) AS AVG_Bonus 
+	,COUNT(BusinessEntityID) AS count
+from Sales.SalesPerson
+where SalesQuota > 25000
 
 
+--Question:93
+/*
+ From the following tables wirte a query in SQL to return aggregated values for each department.
+ Return name, minimum salary, maximum salary, average salary, and number of employees in each department.
+*/
+select * from HumanResources.Department
+select * from HumanResources.EmployeePayHistory
+select * from HumanResources.EmployeeDepartmentHistory
+
+select d.Name
+	,d.DepartmentID
+	,MIN(ep.Rate) AS Min_Salary
+	,MAX(ep.Rate) AS Max_Salary
+	,avg(ep.Rate) AS avg_Salary 
+	,COUNT(ep.BusinessEntityID) AS Number_of_employee
+from HumanResources.Department d
+JOIN HumanResources.EmployeeDepartmentHistory ed ON ed.DepartmentID=ed.DepartmentID 
+JOIN HumanResources.EmployeePayHistory ep ON ep.BusinessEntityID= ed.BusinessEntityID
+group by d.DepartmentID,d.Name
 
 
+--Question:94
+/*
+From the following tables write a SQL query to return the departments of a company that each have more than 15 employees.
+*/
+
+select JobTitle
+	,COUNT(BusinessEntityID) AS No_of_Employee
+from HumanResources.Employee
+group by JobTitle
+HAVING COUNT(BusinessEntityID) > 15
+
+--Question:95
+/*
+From the following table write a query in SQL to find the number of products that ordered in each of the specified sales orders.
+*/
+
+select SalesOrderID
+	,COUNT(ProductID) AS productcount
+from  Sales.SalesOrderDetail
+group by SalesOrderID
+--having SalesOrderID='43661'
+
+--Question:96
+/*
+From the following table write a query in SQL to compute the 
+statistical variance of the sales quota values for each quarter in a calendar year for a sales person. 
+Return year, quarter, salesquota and variance of salesquota.
+*/
+
+select QuotaDate AS Year
+	,DATEPART(QUARTER,QuotaDate) Quarter_
+	,SalesQuota AS SalesQuota 
+	,var(SalesQuota) OVER(order by DATEPART(QUARTER,QuotaDate)) AS Variance
+from  sales.salespersonquotahistory
+--where  BusinessEntityID=2 and DATEPART(QUARTER,QuotaDate)=2012
+order by Quarter_ 
+
+--Question:97
+/*
+From the following table write a query in SQL to populate the variance of all unique values as well as all values,
+including any duplicates values of SalesQuota column.
+*/
